@@ -87,3 +87,32 @@ services:
       - CAMUNDA_BPM_ADMIN_USER_ID=potatis
       - CAMUNDA_BPM_ADMIN_USER_PASSWORD=123
  ```
+
+## Azure
+### CI
+Create a pipeline that connects with your repository, builds and pushes the docker image to a container registry (azure or not) You can set it up as well as you want, you can trigger the pipe with Pull Requests on several branches and then add the branch name to the image to use in different deployments.
+```YAML
+    - task: Docker@0
+      displayName: 'Build an image'
+      inputs:
+        azureSubscription: 'FILLED IN AZURE DEVOPS'
+        azureContainerRegistry: 'FILLED IN AZURE DEVOPS'
+        action: Build an image
+        imageName: $(Build.Repository.Name)-$(Build.SourceBranchName)
+``` 
+
+### CD
+The most important thing when deploying an app service with azure devops is the app settings. 
+Please remember to set up the port variable. 
+```yaml
+-DOCKER_REGISTRY_SERVER_PASSWORD YOUR_DOCKER_REGISTRY 
+-DOCKER_REGISTRY_SERVER_USERNAME YOUR_USERNAME
+-DOCKER_REGISTRY_SERVER_URL YOUR_REGISTRY_URL
+-SPRING_DATASOURCE_PASSWORD YOUR_DATABASE_PASS
+-SPRING_DATASOURCE_URL YOUR_DATABASE_URL
+-SPRING_DATASOURCE_USERNAME YOUR_DATABASE_USERNAME 
+-PORT 8080 
+-WEBSITES_CONTAINER_START_TIME_LIMIT 1800 # The application make take longer to warm up the container so you may need to have more time before the app thinks the container died
+-CAMUNDA_BPM_ADMIN_USER_ID YOUR_CAMUNDA_ADMIN_USERNAME 
+-CAMUNDA_BPM_ADMIN_USER_PASSWORD YOUR_CAMUNDA_ADMING_PASS
+```
