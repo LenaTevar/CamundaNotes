@@ -1,0 +1,32 @@
+version: "3.9"
+services:
+
+  camunda-local-db:
+    image: 'postgres:latest'
+    container_name: camunda-local-db
+    hostname: camunda-local-db
+    expose:
+      - 5432
+    environment:
+      - ENVIRONMENT=docker-compose
+      - POSTGRES_USER=camunda_user
+      - POSTGRES_PASSWORD=camunda_pass
+      - POSTGRES_DB=camunda-local-db
+
+
+  camunda-springboot:
+    build: .
+    container_name: camunda-springboot
+    hostname: camunda-springboot
+    depends_on:
+      - camunda-local-db
+    restart: always
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://camunda-local-db:5432/camunda-local-db
+      - SPRING_DATASOURCE_USERNAME=camunda_user
+      - SPRING_DATASOURCE_PASSWORD=camunda_pass
+      - CAMUNDA_BPM_ADMIN_USER_ID=potatis
+      - CAMUNDA_BPM_ADMIN_USER_PASSWORD=123
+ 
