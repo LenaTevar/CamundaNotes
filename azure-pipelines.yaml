@@ -1,0 +1,36 @@
+trigger:
+- main 
+
+resources:
+- repo: self
+
+
+stages:
+- stage: Build
+  displayName: Build image
+  jobs:
+  - job: Build
+    displayName: Build
+    pool:
+      vmImage: ubuntu-latest
+    steps:  
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish Artifact: camunda-artifact'
+      inputs:
+        ArtifactName: 'camunda-artifact'
+
+    - task: Docker@0
+      displayName: 'Main Branch Build an image'
+      inputs:
+        azureSubscription: 'YOUR_SUBSCRIPTION'
+        azureContainerRegistry: '{"loginServer":"container_registry","id" : "YOUR_SUBSCRIPTION"}'
+        action: Build an image
+        imageName: $(Build.Repository.Name)-$(Build.SourceBranchName)
+        
+    - task: Docker@0
+      displayName: 'Main Branch Push an image'
+      inputs:
+        azureSubscription: 'YOUR_SUBSCRIPTION'
+        azureContainerRegistry: '{"loginServer":"container_registry","id" : "YOUR_SUBSCRIPTION"}'
+        action: Push an image
+        imageName: $(Build.Repository.Name)-$(Build.SourceBranchName)
