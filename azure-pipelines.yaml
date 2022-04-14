@@ -20,17 +20,17 @@ stages:
         ArtifactName: 'camunda-artifact'
 
     - task: Docker@0
-      displayName: 'Main Branch Build an image'
+      displayName: 'Build an image'
       inputs:
-        azureSubscription: 'YOUR_SUBSCRIPTION'
-        azureContainerRegistry: '{"loginServer":"container_registry","id" : "YOUR_SUBSCRIPTION"}'
+        azureSubscription: 'FILLED IN AZURE DEVOPS'
+        azureContainerRegistry: 'FILLED IN AZURE DEVOPS'
         action: Build an image
         imageName: $(Build.Repository.Name)-$(Build.SourceBranchName)
         
     - task: Docker@0
-      displayName: 'Main Branch Push an image'
+      displayName: 'Push an image'
       inputs:
-        azureSubscription: 'YOUR_SUBSCRIPTION'
-        azureContainerRegistry: '{"loginServer":"container_registry","id" : "YOUR_SUBSCRIPTION"}'
+        azureSubscription: 'FILLED IN AZURE DEVOPS'
+        azureContainerRegistry: 'FILLED IN AZURE DEVOPS'
         action: Push an image
         imageName: $(Build.Repository.Name)-$(Build.SourceBranchName)
