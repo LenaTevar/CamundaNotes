@@ -88,9 +88,11 @@ services:
       - CAMUNDA_BPM_ADMIN_USER_PASSWORD=123
  ```
 
-## Azure
+## Azure Devops
+This is a little explanation on how to deploy in Azure Devops to Azure services. 
 ### CI
-Create a pipeline that connects with your repository, builds and pushes the docker image to a container registry (azure or not) You can set it up as well as you want, you can trigger the pipe with Pull Requests on several branches and then add the branch name to the image to use in different deployments.
+Create a pipeline that connects with your repository, builds and pushes the docker image to a container registry (azure or not) You can set it up as you want, but what I do is to add the branch name to the image name, and then trigger the CI on those pipelines. You can use wildcards in the CI yaml file for the branches. For instance, you could have "RELEASE-*" so the branches with that patter will also trigger.
+
 ```YAML
     - task: Docker@0
       displayName: 'Build an image'
@@ -102,8 +104,17 @@ Create a pipeline that connects with your repository, builds and pushes the dock
 ``` 
 
 ### CD
+There are several ways of deploying by branching. 
+
+Deploy by release branch: *Main* branch automated deployment to a dev deployment environment. *RELEASE* branch automated deployment to pre-prod environment, manual deployment to production enviromnet. 
+
+Deploy by dev/main branch. *dev* branch automated deployed to dev environment, *main* branch automated deployment to pre-prod environment and manual deployment to production environment. 
+
+
 The most important thing when deploying an app service with azure devops is the app settings. 
 Please remember to set up the port variable. 
+
+
 ```yaml
 -DOCKER_REGISTRY_SERVER_PASSWORD YOUR_DOCKER_REGISTRY 
 -DOCKER_REGISTRY_SERVER_USERNAME YOUR_USERNAME
@@ -112,7 +123,13 @@ Please remember to set up the port variable.
 -SPRING_DATASOURCE_URL YOUR_DATABASE_URL
 -SPRING_DATASOURCE_USERNAME YOUR_DATABASE_USERNAME 
 -PORT 8080 
--WEBSITES_CONTAINER_START_TIME_LIMIT 1800 # The application make take longer to warm up the container so you may need to have more time before the app thinks the container died
+-WEBSITES_CONTAINER_START_TIME_LIMIT 1800 
+# The application make take longer to warm up the container so you may need to have more time before the app thinks the container died
 -CAMUNDA_BPM_ADMIN_USER_ID YOUR_CAMUNDA_ADMIN_USERNAME 
 -CAMUNDA_BPM_ADMIN_USER_PASSWORD YOUR_CAMUNDA_ADMING_PASS
 ```
+
+Frecuent problem: 
+- The container gets unauthorised error: 
+  - Check that the container registry has admin privileges in the password/username
+  - Check that the DOCKER_REGISTRY variables in the CD pipeline are correct
